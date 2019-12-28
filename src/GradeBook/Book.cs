@@ -3,39 +3,37 @@ using System;
 
 namespace GradeBook
 {
-    class Book
+    public class Book
     {
         public Book(string name)
         {
             grades = new List<double>();
-            this.name = name;
+            Name = name;
         }
         
         private List<double> grades;
-        private string name;
+        public string Name;
 
         public void AddGrade(double grade)
         {
             grades.Add(grade);
         }
 
-        public void ShowStatistics()
+        public Statistics GetStatistics()
         {
-            var result = 0.0;
-            var highGrade = double.MinValue;
-            var lowGrade = double.MaxValue;
-            foreach (var number in grades)
+            var result = new Statistics();
+            result.Average = 0.0;
+            result.High = double.MinValue;
+            result.Low = double.MaxValue;
+            foreach (var grade in grades)
             {
-                lowGrade = Math.Min(number, lowGrade);
-                highGrade = Math.Max(number, highGrade);
-                result += number;
+                result.Low = Math.Min(grade, result.Low);
+                result.High = Math.Max(grade, result.High);
+                result.Average += grade;
             }
             
-            result /= grades.Count;
-
-            Console.WriteLine($"The average grade is {result:N1}");
-            Console.WriteLine($"Your lowest grade is {lowGrade}");
-            Console.WriteLine($"Your highest grade is {highGrade}");
+            result.Average /= grades.Count;
+            return result;
         }
     }
 }
