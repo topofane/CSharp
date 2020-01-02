@@ -1,38 +1,47 @@
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace GradeBook
 {
-    public class Book
+    public delegate void GradeAddedDelegate(object sender, EventArgs args);
+    public class Book : BookBase, IBook
     {
-        public Book(string name)
+        public override event GradeAddedDelegate GradeAdded;
+
+        public Book(string name) : base(name)
         {
             grades = new List<double>();
             Name = name;
         }
         
         private List<double> grades;
-        public string Name;
 
-        public void AddGrade(double grade)
+        public override void AddGrade(double grade)
         {
-            grades.Add(grade);
-        }
-
-        public Statistics GetStatistics()
-        {
-            var result = new Statistics();
-            result.Average = 0.0;
-            result.High = double.MinValue;
-            result.Low = double.MaxValue;
-            foreach (var grade in grades)
+            if(grade <= 100 && grade >= 0)
             {
-                result.Low = Math.Min(grade, result.Low);
-                result.High = Math.Max(grade, result.High);
-                result.Average += grade;
+                grades.Add(grade);
+                if(GradeAdded != null)
+                {
+                    GradeAdded(this,new EventArgs());
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid value!");
             }
             
-            result.Average /= grades.Count;
+        }
+
+        public override Statistics GetStatistics()
+        {
+            var result = new Statistics();
+            foreach (var grade in grades)
+            {
+                result.Add(grade);    
+            }
+            
             return result;
         }
     }
